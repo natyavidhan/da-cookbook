@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock title %}
+{% block name %}Home{% endblock name %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <center>
+        <img src="/static/logo.png" alt="Logo">
+        <h1 class="mt-3">Da Cookbook</h1>
+        <h3>The Perfect Place To Save And Maintain All Your Delicious Recipes</h3>
+        <div class="mt-4">
+            <h1>Welcom {{user['username']}} !</h1>
+        </div>
+    </center>
+</div>    
+{% endblock content %}
