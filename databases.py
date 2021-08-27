@@ -17,7 +17,7 @@ class Database:
 
     def registerUser(self, username, mail, password):
         if self.checkMail(mail) and self.getUser(mail) is None:
-            var bp = bytes(password, encoding= 'utf-8')
+            bp = bytes(password, encoding= 'utf-8')
             password = bcrypt.hashpw(bp, bcrypt.gensalt());
             self.client.Cookbook.users.insert_one({'_id':str(uuid.uuid4()), 'mail': mail, 'password': password, 'username': username})
             return True
