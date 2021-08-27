@@ -1,6 +1,6 @@
 import re
 from pymongo import MongoClient
-from passlib.hash import sha256_crypt
+import bcrypt
 import uuid
 import json
 
@@ -17,7 +17,8 @@ class Database:
 
     def registerUser(self, username, mail, password):
         if self.checkMail(mail) and self.getUser(mail) is None:
-            password = sha256_crypt.encrypt(password)
+            var bp = bytes(password, encoding= 'utf-8')
+            password = bcrypt.hashpw(bp, bcrypt.gensalt());
             self.client.Cookbook.users.insert_one({'_id':str(uuid.uuid4()), 'mail': mail, 'password': password, 'username': username})
             return True
         return False
@@ -26,7 +27,7 @@ class Database:
         if self.checkMail(mail):
             user = self.client.Cookbook.users.find_one({'mail': mail})
             if user is not None:
-                if sha256_crypt.verify(password, user['password']):
+                if bcrypt.checkpw(password, user['password']):
                     return True
                 return False
             return False
