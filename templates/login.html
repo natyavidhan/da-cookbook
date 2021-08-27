@@ -23,6 +23,7 @@
             <input type="password" class="form-control" id="inputPassword3" name="password">
           </div>
         </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button type="submit" class="btn btn-primary">Login</button>
       </form>
 </div>    
