@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock title %}
+{% block name %}Register{% endblock name %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1 class="mt-5">Register</h1>
+    {% if err != '' %}
+        <div class="alert alert-danger" role="alert">
+            {{err}}
+        </div>
+    {% endif %}
+    <form method="POST">
+        <div class="row mb-3">
+          <label for="username" class="col-sm-2 col-form-label">Username</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputEmail3" name="username">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+          <div class="col-sm-10">
+            <input type="email" class="form-control" id="inputEmail3" name="email">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="inputPassword3" name="password">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+</div>    
+{% endblock content %}
