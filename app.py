@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import databases
+from flask_wtf.csrf import CSRFProtect
 
 app= Flask(__name__)
 app.config['SECRET_KEY'] = 'DaCookbook'
 database = databases.Database()
+csrf = CSRFProtect(app)
 
 @app.route('/')
 def index():
