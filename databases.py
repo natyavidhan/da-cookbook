@@ -41,7 +41,7 @@ class Database:
         if self.checkMail(mail):
             user = self.client.Cookbook.users.find_one({'mail': mail})
             if user is not None:
-                if bcrypt.checkpw(password, user['password']):
+                if bcrypt.checkpw(password.encode('utf8'), user['password']):
                     return True
                 return False
             return False
