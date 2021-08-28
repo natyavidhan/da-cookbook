@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import databases
+import json
 from flask_wtf.csrf import CSRFProtect
 
+creds = json.load(open('config.json'))
 app= Flask(__name__)
 app.config['SECRET_KEY'] = 'DaCookbook'
 database = databases.Database()
 csrf = CSRFProtect(app)
+app.config['WTF_CSRF_SECRET_KEY'] = creds['WTF_CSRF_SECRET_KEY']
 
 @app.route('/')
 def index():
@@ -54,4 +57,4 @@ def logout():
     return redirect(url_for('index'))
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
