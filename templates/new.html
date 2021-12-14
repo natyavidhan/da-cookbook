@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}New{% endblock title %}
+{% block name %}New{% endblock name %}
+
+{% block content %}
+<div class="container mt-5">
+            <h1 class="text-center">New Recipe</h1>
+            <form action="/new" method="post" enctype="multipart/form-data">
+                <div class="mt-3">
+                    <h5>Title</h5>
+                    <input type="text" class="form-control" name="title">
+                </div>
+                <div class="mt-3">
+                    <h5>Description</h5>
+                    <textarea class="form-control" name="description"></textarea>
+                </div>
+                <div class="mt-3" id="ingredientsGrp">
+                    <h5>Ingredients</h5>
+                    <div class="mt-3" id="ingredients"></div>
+                    <button  type="button"  onclick="addIngredient()" class="btn btn-primary mt-2">Add Ingredient</button>
+                </div>
+                <div class="mt-3" id="stepsGrp">
+                    <h5>Steps</h5>
+                    <div class="mt-3" id="steps"></div>
+                    <button  type="button"  onclick="addStep()" class="btn btn-primary mt-2">Add Step</button>
+                </div>
+                <div class="mt-3">
+                    <h5>Type</h5>
+                    <select class="form-select" name="type">
+                      <option value="Breakfast">Breakfast</option>
+                      <option value="Lunch">Lunch</option>
+                      <option value="Dinner">Dinner</option>
+                      <option value="Snack">Snack</option>
+                    </select>
+                </div>
+                <div class="mt-3">
+                    <h5>Tags (separate with spaces)</h5>
+                    <input type="text" class="form-control" name="tags">
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-primary mt-5">Submit</button>
+            </form>
+</div>    
+<script>
+    function addIngredient() {
+        var item = document.getElementById("ingredients").childElementCount+1;
+        var new_input = `
+            <div class="input-group mt-3">
+                <label class="input-group-text"> ` + item + `</label>
+                <label class="input-group-text">Item</label>
+                <input type="text" class="form-control" name="ingredients#` + item + `"  required>
+                <label class="input-group-text">Quantity</label>
+                <input type="number" class="input" style="width:150px;" min=0 name="ingredientsAmt#` + item + `"  required>
+                <select class="select" style="width:150px;" name="ingredientsScale#` + item + `"  required>
+                    <option value="Tabelspoon">Tabelspoon</option>
+                    <option value="Teaspoon">Teaspoon</option>
+                    <option value="Kilogram">Kilogram</option>
+                    <option value="Gram">Gram</option>
+                    <option value="Piece">Piece</option>
+                </select>
+            </div>
+        `
+        $("#ingredients").append(new_input);
+    }
+    function addStep() {
+        var item = document.getElementById("steps").childElementCount+1;
+        var new_input = `
+            <div class="input-group mt-3">
+                <label class="input-group-text">Step ` + item + `</label>
+                <input type="text" class="form-control" name="step#` + item + `"  required>
+            </div>
+        `
+        $("#steps").append(new_input);
+    }
+</script>
+{% endblock content %}
