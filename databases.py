@@ -36,7 +36,7 @@ class Database:
         return self.recipes.find({'by': user})
 
     def getRecipeByID(self, ID):
-        return self.client.Cookbook.recipes.find_one({'_id': ID})
+        return self.recipes.find_one({'_id': ID})
     
     def getRandomRecipes(self, number):
         return self.recipes.aggregate([{'$sample': {'size': number}}])
@@ -44,3 +44,56 @@ class Database:
     def addRecipe(self, recipe):
         self.recipes.insert_one(recipe)
         self.users.update_one({'_id': recipe['by']}, {'$push': {'recipes': recipe['_id']}})
+    
+    def deleteRecipe(self, ID):
+        recipe = self.getRecipeByID(ID)
+        self.recipes.delete_one({'_id': ID})
+        self.users.update_one({'_id': recipe['by']}, {'$pull': {'recipes': ID}})
+        for like in recipe['likes']:
+            self.users.update_one({'_id': like}, {'$pull': {'liked': ID}})
+        for favorite in recipe['favorite']:
+            self.users.update_one({'_id': favorite}, {'$pull': {'favorites': ID}})
+    
+    def likeRecipe(self, user, recipe):
+        recipe = self.getRecipeByID(recipe)
+        if user in recipe['likes']:
+            return False
+        self.users.update_one({'_id': user}, {'$push': {'liked': recipe}})
+        self.recipes.update_one({'_id': recipe}, {'$push': {'likes': user}})
+        return True
+    
+    def unlikeRecipe(self, user, recipe):
+        recipe = self.getRecipeByID(recipe)
+        if user not in recipe['likes']:
+            return False
+        self.users.update_one({'_id': user}, {'$pull': {'liked': recipe}})
+        self.recipes.update_one({'_id': recipe}, {'$pull': {'likes': user}})
+        return True
+    
+    def addFavorite(self, user, recipe):
+        recipe = self.getRecipeByID(recipe)
+        if user in recipe['favorite']:
+            return False
+        self.users.update_one({'_id': user}, {'$push': {'favorites': recipe}})
+        self.recipes.update_one({'_id': recipe}, {'$push': {'favorite': user}})
+        return True
+    
+    def removeFavorite(self, user, recipe):
+        recipe = self.getRecipeByID(recipe)
+        if user not in recipe['favorite']:
+            return False
+        self.users.update_one({'_id': user}, {'$pull': {'favorites': recipe}})
+        self.recipes.update_one({'_id': recipe}, {'$pull': {'favorite': user}})
+        return True
+    
+    def getFavorites(self, user):
+        return self.users.find_one({'_id': user})['favorites']
+    
+    def getLiked(self, user):
+        return self.users.find_one({'_id': user})['liked']
+    
+    def getUserRecipes(self, user):
+        return self.users.find_one({'_id': user})['recipes']
+    
+    def getUserLikes(self, user):
+        return self.users.find_one({'_id': user})['likes']

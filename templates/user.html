@@ -13,6 +13,15 @@
             <a href="/new" class="mt-4 btn btn-success">New Recipe</a>
             <a href="/logout" class="mt-4 btn btn-danger">Logout</a>
         </div>
+        <div class="mt-5">
+            {% for recipe in recipes %}
+                <div class="recipe">
+                    <h1>{{recipe['title']}}</h1>
+                    <h5>{{recipe['description']}}</h5>
+                    <h6 class="text-muted">Created On: {{recipe['created']}}</h6>
+                </div>
+            {% endfor %}
+        </div>
     </center>
 </div>    
 {% endblock content %}

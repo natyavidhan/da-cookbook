@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session,jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
 import databases
 import json
 from authlib.integrations.flask_client import OAuth
@@ -20,7 +20,11 @@ backends = [Google]
 @app.route('/')
 def home():
     if 'user' in session:
-        return render_template('user.html', user=session['user'])
+        recipes = []
+        for recipe in database.getUserRecipes(session['user']['_id']):
+            recipes.append(database.getRecipeByID(recipe))
+        print(recipes)
+        return render_template('user.html', user=session['user'], recipes=recipes)
     return render_template('index.html')
 
 @app.route('/logout')
@@ -57,15 +61,43 @@ def new():
         "tags": recipe['tags'].split(" "),
         "by": session['user']['_id'],
         "likes": [],
+        "favorite": [],
         "created": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     database.addRecipe(recipe)
     return redirect(url_for('home'))
 
-@app.route("/recipe/<id>")
+@app.route("/recipe/<id>", methods=['GET', 'DELETE'])
 def recipe(id):
-    recipe = database.getRecipe(id)
-    return render_template("recipe.html", recipe=recipe)         
+    recipe = database.getRecipeByID(id)
+    recipe['by'] = database.getUser(recipe['by'])
+    if 'user' in session:
+        if request.method == "DELETE":
+            try:
+                database.deleteRecipe(id)
+                return "deleted"
+            except:
+                return abort(404)
+        return render_template("recipe.html", recipe=recipe, user=session['user'])
+    return render_template("recipe.html", recipe=recipe, user=None)
+
+@app.route("/recipe/<id>/like", methods=['POST'])
+def like(id):
+    if 'user' not in session:
+        return abort(401)
+    result = database.likeRecipe(session['user']['_id'], id)
+    if not result:
+        database.unlikeRecipe(session['user']['_id'], id)
+    return "liked"
+
+@app.route("/recipe/<id>/favorite", methods=['POST'])
+def favorite(id):
+    if 'user' not in session:
+        return abort(401)
+    result = database.addFavorite(session['user']['_id'], id)
+    if not result:
+        database.removeFavorite(session['user']['_id'], id)
+    return "favorited"
 
 def handle_authorize(remote, token, user_info):
     if not database.userExists(user_info['email']):

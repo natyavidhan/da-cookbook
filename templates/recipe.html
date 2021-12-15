@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{recipe['title']}} | Da Cookbook
+{% endblock title %}
+{% block name %}
+    {{recipe['title']}} | Da Cookbook
+{% endblock name %}
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h1>{{recipe['title']}}</h1>
+        <h5>{{recipe['description']}}</h5>
+        <h6 class="text-muted">
+            By: {{recipe['by']['username']}} <br>
+            Submitted On: {{recipe['created']}}
+        </h6>
+        {% if user is not none %}
+        <div class="buttons">
+            <button class="btn btn-outline-success" id="like-button" onclick="like()"><img src="/static/img/like.png" alt="" height="20px"> Like</button>
+            <button class="btn btn-outline-warning" id="favorite-button" onclick="favorite()"><img src="/static/img/favorite.png" alt="" height="20px"> Favorite</button>
+            {% if user['_id'] == recipe['by']['_id'] %}
+                <button class="btn btn-danger" onclick="deleteRecipe()">Delete Recipe</button>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="ingredients mt-5">
+        <h4>Ingredients</h4>
+          <ul class="list-group list-group-numbered">
+            {% for ingredient in recipe['ingredients'] %}
+              <li class="list-group-item">{{ingredient['name']}} - {{ingredient['amount']}} {{ingredient['scale']}}</li>
+            {% endfor %}
+          </ul>
+    </div>
+    <div class="steps mt-5">
+        <h4>Steps</h4>
+          <ol class="list-group list-group-numbered">
+            {% for step in recipe['steps'] %}
+              <li class="list-group-item">{{step}}</li>
+            {% endfor %}
+          </ol>
+    </div>
+</div>
+<script>
+    function like(){
+        $.post('/recipe/{{recipe["_id"]}}/like',
+                    {
+                        "csrf_token": "{{ csrf_token() }}"
+                    },
+        function(data){
+                if($('#like-button').hasClass('btn-outline-success')){
+                    $('#like-button').removeClass('btn-outline-success');
+                    $('#like-button').addClass('btn-success');
+                    $('#like-button').html('<img src="/static/img/liked.png" alt="" height="20px"> Liked');
+                }else{
+                    $('#like-button').removeClass('btn-success');
+                    $('#like-button').addClass('btn-outline-success');
+                    $('#like-button').html('<img src="/static/img/like.png" alt="" height="20px"> Like');
+                }
+        });
+    }
+
+    function favorite(){
+        $.post('/recipe/{{recipe["_id"]}}/favorite',
+                    {
+                        "csrf_token": "{{ csrf_token() }}"
+                    },
+        function(data){
+            if(data.success){
+                if($('#favorite-button').hasClass('btn-outline-warning')){
+                    $('#favorite-button').removeClass('btn-outline-warning');
+                    $('#favorite-button').addClass('btn-warning');
+                    $('#favorite-button').html('<img src="/static/img/favorited.png" alt="" height="20px"> Favorited');
+                }else{
+                    $('#favorite-button').removeClass('btn-warning');
+                    $('#favorite-button').addClass('btn-outline-warning');
+                    $('#favorite-button').html('<img src="/static/img/favorite.png" alt="" height="20px"> Favorite');
+                }
+            }
+        });
+    }
+
+    function deleteRecipe(){
+        perm = confirm("Are you sure you want to delete this recipe?");
+        if (perm){
+            $.ajax({
+                url: `/recipe/{{recipe['_id']}}`,
+                type: 'DELETE',
+                    data: {
+                        "csrf_token": "{{ csrf_token() }}"
+                    },
+                success: function(result){
+                    window.location.href = '/';
+                }
+            });
+        }
+    }
+</script>
+{% endblock content %}
