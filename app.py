@@ -72,7 +72,7 @@ def recipe(id):
     recipe = database.getRecipeByID(id)
     recipe['by'] = database.getUser(recipe['by'])
     if 'user' in session:
-        if request.method == "DELETE":
+        if request.method == "DELETE" and session['user']['_id'] == recipe['by']['_id']:
             try:
                 database.deleteRecipe(id)
                 return "deleted"
@@ -98,6 +98,26 @@ def favorite(id):
     if not result:
         database.removeFavorite(session['user']['_id'], id)
     return "favorited"
+
+@app.route("/liked")
+def liked():
+    if 'user' not in session:
+        return abort(401)
+    liked = database.getLiked(session['user']['_id'])
+    liked = [database.getRecipeByID(i) for i in liked]
+    for i in liked:
+        i['by'] = database.getUser(i['by'])
+    return render_template("display.html", content=liked, user=session['user'], type="Liked")
+
+@app.route("/favorites")
+def favorites():
+    if 'user' not in session:
+        return abort(401)
+    favorites = database.getLiked(session['user']['_id'])
+    favorites = [database.getRecipeByID(i) for i in favorites]
+    for i in favorites:
+        i['by'] = database.getUser(i['by'])
+    return render_template("display.html", content=favorites, user=session['user'], type="Favorites")
 
 def handle_authorize(remote, token, user_info):
     if not database.userExists(user_info['email']):

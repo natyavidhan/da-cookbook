@@ -1,5 +1,9 @@
-.recipe{
+.recipe, .content{
     background-color: rgb(221, 221, 221);
     border-radius: 25px;
     padding: 10px;
+}
+a, a:visited, a:hover, a:active {
+    text-decoration: none;
+    color: black;
 }

@@ -58,32 +58,32 @@ class Database:
         recipe = self.getRecipeByID(recipe)
         if user in recipe['likes']:
             return False
-        self.users.update_one({'_id': user}, {'$push': {'liked': recipe}})
-        self.recipes.update_one({'_id': recipe}, {'$push': {'likes': user}})
+        self.users.update_one({'_id': user}, {'$push': {'liked': recipe['_id']}})
+        self.recipes.update_one({'_id': recipe['_id']}, {'$push': {'likes': user}})
         return True
     
     def unlikeRecipe(self, user, recipe):
         recipe = self.getRecipeByID(recipe)
         if user not in recipe['likes']:
             return False
-        self.users.update_one({'_id': user}, {'$pull': {'liked': recipe}})
-        self.recipes.update_one({'_id': recipe}, {'$pull': {'likes': user}})
+        self.users.update_one({'_id': user}, {'$pull': {'liked': recipe['_id']}})
+        self.recipes.update_one({'_id': recipe['_id']}, {'$pull': {'likes': user}})
         return True
     
     def addFavorite(self, user, recipe):
         recipe = self.getRecipeByID(recipe)
         if user in recipe['favorite']:
             return False
-        self.users.update_one({'_id': user}, {'$push': {'favorites': recipe}})
-        self.recipes.update_one({'_id': recipe}, {'$push': {'favorite': user}})
+        self.users.update_one({'_id': user}, {'$push': {'favorites': recipe['_id']}})
+        self.recipes.update_one({'_id': recipe['_id']}, {'$push': {'favorite': user}})
         return True
     
     def removeFavorite(self, user, recipe):
         recipe = self.getRecipeByID(recipe)
         if user not in recipe['favorite']:
             return False
-        self.users.update_one({'_id': user}, {'$pull': {'favorites': recipe}})
-        self.recipes.update_one({'_id': recipe}, {'$pull': {'favorite': user}})
+        self.users.update_one({'_id': user}, {'$pull': {'favorites': recipe['_id']}})
+        self.recipes.update_one({'_id': recipe['_id']}, {'$pull': {'favorite': user}})
         return True
     
     def getFavorites(self, user):

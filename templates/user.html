@@ -12,14 +12,18 @@
             <h1>Welcom {{user['username']}} !</h1>
             <a href="/new" class="mt-4 btn btn-success">New Recipe</a>
             <a href="/logout" class="mt-4 btn btn-danger">Logout</a>
+            <a href="/liked" class="mt-4 btn btn-warning">Liked</a>
+            <a href="/favorites" class="mt-4 btn btn-warning">Favorites</a>
         </div>
         <div class="mt-5">
             {% for recipe in recipes %}
+            <a href="/recipe/{{recipe['_id']}}">
                 <div class="recipe">
                     <h1>{{recipe['title']}}</h1>
                     <h5>{{recipe['description']}}</h5>
                     <h6 class="text-muted">Created On: {{recipe['created']}}</h6>
                 </div>
+            </a>
             {% endfor %}
         </div>
     </center>

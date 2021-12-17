@@ -16,13 +16,26 @@
         </h6>
         {% if user is not none %}
         <div class="buttons">
+            {% if user['_id'] in recipe['likes'] %}
+            <button class="btn btn-success" id="like-button" onclick="like()"><img src="/static/img/liked.png" alt="" height="20px"> Like</button>
+            {% else %}    
             <button class="btn btn-outline-success" id="like-button" onclick="like()"><img src="/static/img/like.png" alt="" height="20px"> Like</button>
+            {% endif %}
+
+            {% if user['_id'] in recipe['favorite'] %}
+            <button class="btn btn-warning" id="favorite-button" onclick="favorite()"><img src="/static/img/favorited.png" alt="" height="20px"> Favorite</button>
+            {% else %} 
             <button class="btn btn-outline-warning" id="favorite-button" onclick="favorite()"><img src="/static/img/favorite.png" alt="" height="20px"> Favorite</button>
+            {% endif %}
+            
             {% if user['_id'] == recipe['by']['_id'] %}
                 <button class="btn btn-danger" onclick="deleteRecipe()">Delete Recipe</button>
             {% endif %}
         </div>
         {% endif %}
+    </div>
+    <div class="mt-4 mb-4 text-center">
+        <h3>Type: {{recipe['type']}}</h3>
     </div>
     <div class="ingredients mt-5">
         <h4>Ingredients</h4>
@@ -66,16 +79,14 @@
                         "csrf_token": "{{ csrf_token() }}"
                     },
         function(data){
-            if(data.success){
-                if($('#favorite-button').hasClass('btn-outline-warning')){
-                    $('#favorite-button').removeClass('btn-outline-warning');
-                    $('#favorite-button').addClass('btn-warning');
-                    $('#favorite-button').html('<img src="/static/img/favorited.png" alt="" height="20px"> Favorited');
-                }else{
-                    $('#favorite-button').removeClass('btn-warning');
-                    $('#favorite-button').addClass('btn-outline-warning');
-                    $('#favorite-button').html('<img src="/static/img/favorite.png" alt="" height="20px"> Favorite');
-                }
+            if($('#favorite-button').hasClass('btn-outline-warning')){
+                $('#favorite-button').removeClass('btn-outline-warning');
+                $('#favorite-button').addClass('btn-warning');
+                $('#favorite-button').html('<img src="/static/img/favorited.png" alt="" height="20px"> Favorited');
+            }else{
+                $('#favorite-button').removeClass('btn-warning');
+                $('#favorite-button').addClass('btn-outline-warning');
+                $('#favorite-button').html('<img src="/static/img/favorite.png" alt="" height="20px"> Favorite');
             }
         });
     }
