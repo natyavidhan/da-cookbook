@@ -20,9 +20,11 @@ backends = [Google]
 @app.route('/')
 def home():
     if 'user' in session:
-        recipes = []
-        for recipe in database.getUserRecipes(session['user']['_id']):
-            recipes.append(database.getRecipeByID(recipe))
+        recipes = [
+            database.getRecipeByID(recipe)
+            for recipe in database.getUserRecipes(session['user']['_id'])
+        ]
+
         print(recipes)
         return render_template('user.html', user=session['user'], recipes=recipes)
     return render_template('index.html')
@@ -45,9 +47,10 @@ def new():
             num = i.split("#")[1]
             ing = {
                 "name": recipe[i],
-                "amount": recipe["ingredientsAmt#" + num],
-                "scale": recipe["ingredientsScale#" + num]
+                "amount": recipe[f"ingredientsAmt#{num}"],
+                "scale": recipe[f"ingredientsScale#{num}"],
             }
+
             ingredients.append(ing)
         elif "step" in i:
             steps.append(recipe[i])
